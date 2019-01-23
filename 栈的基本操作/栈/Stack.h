@@ -16,5 +16,6 @@ typedef struct Stack
 void StackInit(Stack* ps);
 void StackPush(Stack* ps,SDataType data);
 void StackPop(Stack* ps);
-void StackInit(Stack* ps);
-void StackDestory(Stack* ps);
+int StackEmpty(Stack* ps);
+SDataType StackTop(Stack* ps);
+void StackDestroy(Stack* ps);

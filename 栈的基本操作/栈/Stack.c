@@ -37,8 +37,17 @@ void StackPop(Stack* ps)
 	assert(ps);
 	ps->_pos--;
 }
-
-void StackDestory(Stack* ps)
+int StackEmpty(Stack* ps)
+{
+	assert(ps);
+	return ps->_pos;
+}
+SDataType StackTop(Stack* ps)
+{
+	assert(ps);
+	return ps->_array[ps->_pos - 1];
+}
+void StackDestroy(Stack* ps)
 {
 	assert(ps);
 	
