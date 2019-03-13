@@ -1,5 +1,14 @@
 #include"Heap.h"
 #include<string.h>
+//大堆
+int Greater(HPDataType left, HPDataType right)
+{
+	return left > right? 1:0;
+}
+int Less(HPDataType left, HPDataType right)
+{
+	return left < right ? 1 : 0;
+}
 void Swap(HPDataType* left, HPDataType* right)
 {
 	HPDataType temp = 0;
@@ -7,7 +16,7 @@ void Swap(HPDataType* left, HPDataType* right)
 	*left = *right;
 	*right = temp;
 }
-void AdjustDown(Heap* root, int size)
+void AdjustDown(Heap* root, int size, CMP cmp)
 {
 	assert(root);
 	int parent = 0;
@@ -17,12 +26,14 @@ void AdjustDown(Heap* root, int size)
 	while (child < size)
 	{
 		//找左右孩子中较小的孩子
-		if (child + 1 < size && root->_array[child] > root->_array[child + 1])
+		//if (child + 1 < size && root->_array[child] > root->_array[child + 1])
+		if (child + 1 < size && cmp(root->_array[child + 1], root->_array[child]))
 		{
 			child += 1;
 		}
 		//检查双亲是否满足情况
-		if (root->_array[child] < root->_array[parent])
+		//if (root->_array[child] < root->_array[parent])
+		if (cmp(root->_array[child], root->_array[parent]))
 		{
 			Swap(&(root->_array[child]), &(root->_array[parent]));
 			parent = child;
@@ -33,7 +44,7 @@ void AdjustDown(Heap* root, int size)
 	}
 }
 //把双亲的子树调整为堆的结构 （小堆）
-void Adjust(Heap* root, int size)
+void Adjust(Heap* root, int size, CMP cmp)
 {
 	assert(root);
 	//找倒数第一个非叶子节点
@@ -42,22 +53,24 @@ void Adjust(Heap* root, int size)
 	while (parent)
 	{
 		//找左右孩子中较小的孩子
-		if (child + 1 < size &&root->_array[child] > root->_array[child + 1])
+		//if (child + 1 < size &&root->_array[child] > root->_array[child + 1])
+		if (child + 1 < size &&cmp(root->_array[child+1] , root->_array[child ]))
+
 		{
 			child += 1;
 		}
 		//检查双亲是否满足情况
-		if (root->_array[child] < root->_array[parent])
+		if (cmp(root->_array[child] , root->_array[parent]))
 		{
 			Swap(&(root->_array[child]), &(root->_array[parent]));
 			parent -= 1;
 			child = parent * 2 + 1;
 		}
 	}
-	AdjustDown(root, size);
+	AdjustDown(root, size,cmp);
 }
 //创建堆
-void CreateHeap(Heap* root, HPDataType array[10], int size)
+void CreateHeap(Heap* root, HPDataType array[10], int size, CMP cmp)
 {
 	int i = 0;
 	if (NULL == root)
@@ -69,9 +82,9 @@ void CreateHeap(Heap* root, HPDataType array[10], int size)
 	root->_capacity = size;
 	root->_size = size;
 
-	Adjust(root, size);
+	Adjust(root, size,cmp);
 }
-void Adjustup(Heap* root)
+void Adjustup(Heap* root, CMP cmp)
 {
 	assert(root);
 	if (NULL == root)
@@ -80,7 +93,7 @@ void Adjustup(Heap* root)
 	int parent = (child - 1) / 2;
 	while (parent > 0)
 	{
-		if (root->_array[child] < root->_array[parent])
+		if (cmp(root->_array[child] , root->_array[parent]))
 		{
 			Swap(&(root->_array[child]), &(root->_array[parent]));
 			child = parent;
@@ -99,7 +112,7 @@ void Addcatacity(Heap* root)
 	root->_capacity = root->_size + 3;
 }
 //在堆中插入值为data的元素
-void InserHeap(Heap* root, HPDataType data)
+void InserHeap(Heap* root, HPDataType data, CMP cmp)
 {
 	
 	assert(root);
@@ -112,7 +125,7 @@ void InserHeap(Heap* root, HPDataType data)
 	//没满
 	root->_array[root->_size] = data;
 	root->_size++;
-	Adjustup(root);
+	Adjustup(root,cmp);
 }
 //获取堆顶元素
 HPDataType TopHeap(Heap* root)
@@ -135,7 +148,7 @@ int EmptyHeap(Heap* root)
 	return (root->_size == 0);
 }
 //删除堆顶元素
-void DeleteHeapFront(Heap* root)
+void DeleteHeapFront(Heap* root, CMP cmp)
 {
 	int i = 0;
 	assert(root);
@@ -144,17 +157,17 @@ void DeleteHeapFront(Heap* root)
 	//交换堆顶元素和最后一个元素
 	Swap(&(root->_array[0]), &(root->_array[root->_size - 1]));
 	root->_size -= 1;
-	AdjustDown(root,root->_size);
+	AdjustDown(root, root->_size,cmp);
 }
 //堆的销毁
-void DestroyHeap(Heap* root)
+void DestroyHeap(Heap* root, CMP cmp)
 {
 	assert(root);
 	if (NULL == root)
 		return;
 	while (root->_size)
 	{
-		DeleteHeapFront(root);
+		DeleteHeapFront(root,cmp);
 
 	}
 	root->_array = NULL;
@@ -166,11 +179,11 @@ void TestHeap()
 	Heap hp;
 	HPDataType i = 0;
 	HPDataType array[10] = { 5, 4, 2, 7, 6, 1, 8, 3, 9, 0 };
-	CreateHeap(&hp, array, 10);
-	//InserHeap(&hp, 2);
-	//DeleteHeapFront(&hp);
+	CreateHeap(&hp, array, 10,Less);
+	InserHeap(&hp, 2,Less);
+	DeleteHeapFront(&hp,Less);
 	i = TopHeap(&hp);
 	int a = SizeHeap(&hp);
 	int b = EmptyHeap(&hp);
-	DestroyHeap(&hp);
+	DestroyHeap(&hp,Less);
 }
