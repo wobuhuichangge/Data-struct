@@ -16,8 +16,8 @@ typedef struct Heap
 }Heap;
 int Greater(HPDataType left, HPDataType right);
 int Less(HPDataType left, HPDataType right);
-
-
+void AdjustDown(Heap* root, int size, CMP cmp);
+void Swap(HPDataType* left, HPDataType* right);
 //创建堆
 void CreateHeap(Heap* root, HPDataType* array, int size, CMP cmp);
 
@@ -30,20 +30,22 @@ int SizeHeap(Heap* root);
 //检测一个堆是否为空堆
 int EmptyHeap(Heap* root);
 ////删除堆顶元素
-void DeleteHeapFront(Heap* root,CMP cmp);
+void DeleteHeapFront(Heap* root, CMP cmp);
 //堆的销毁
-void DestroyHeap(Heap* root,CMP cmp);
+void DestroyHeap(Heap* root);
 
 
 
 
+//堆排序
+void HeapSort(Heap* root, int size, CMP cmp);
 
-//void AddData(HpDataType ret, heap *hp);//
-//oid Addcatacity(heap *hp);
-//void Heapafterdelete(Heap * root);//堆的最后一个元素的删除
-//
-//
-//
-//
-//void HeapPrint(Heap *root);//打印函数
+//top k问题
+
+
+void TopK(HPDataType* arr, int size, CMP cmp, int K);
+
+
+void PrintTok(Heap* root, int size);
+void HeapPrint(Heap *root);//打印函数
 void TestHeap();

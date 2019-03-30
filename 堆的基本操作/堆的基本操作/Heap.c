@@ -63,9 +63,11 @@ void Adjust(Heap* root, int size, CMP cmp)
 		if (cmp(root->_array[child] , root->_array[parent]))
 		{
 			Swap(&(root->_array[child]), &(root->_array[parent]));
-			parent -= 1;
-			child = parent * 2 + 1;
+			/*parent -= 1;
+			child = parent * 2 + 1;*/
 		}
+		parent -= 1;
+		child = parent * 2 + 1;
 	}
 	AdjustDown(root, size,cmp);
 }
@@ -160,9 +162,9 @@ void DeleteHeapFront(Heap* root, CMP cmp)
 	AdjustDown(root, root->_size,cmp);
 }
 //堆的销毁
-void DestroyHeap(Heap* root, CMP cmp)
+void DestroyHeap(Heap* root)
 {
-	assert(root);
+	/*assert(root);
 	if (NULL == root)
 		return;
 	while (root->_size)
@@ -170,20 +172,96 @@ void DestroyHeap(Heap* root, CMP cmp)
 		DeleteHeapFront(root,cmp);
 
 	}
-	root->_array = NULL;
+	root->_array = NULL;*/
+	if (root->_array)
+	{
+		free(root->_array);
+		root->_capacity = 0;
+		root->_size = 0;
+	}
 	printf("销毁成功\n");
 }
 
+//堆排序   大堆排升序。小堆排降序
+void HeapSort(Heap* root, int size, CMP cmp)
+{
+	int i = 0;
+	assert(root);
+	if (NULL == root)
+		return;
+	for (i = size - 1; i > 0; i--)
+	{
+		Swap(&(root->_array[0]), &(root->_array[i]));
+		AdjustDown(root, i, cmp);
+	}
+
+}
+//打印函数
+void HeapPrint(Heap *root)
+{	
+	int i = 0;
+	assert(root);
+	if (NULL == root)
+		return;
+	for (i = 0; i < root->_size; i++)
+	{
+		printf("%d ", root->_array[i]);
+	}
+	printf("\n");
+}
+void PrintTok(Heap* root, int K)
+{
+	int i = 0;
+	assert(root);
+	if (NULL == root)
+		return;
+	printf("最大的3个数：");
+	for (i = 0; i < K; i++)
+	{
+		printf("%d ", root->_array[i]);
+	}
+	printf("\n");
+}
+//前K个最大元素 
+
+//1 先用N个元素中前K个元素创建一个堆   最大对应小堆，最小对应大堆
+//2.用剩余的N-k个元素不断与堆顶元素进行比较，替换调整。
+//(N-k)logK
+//求最大的3个元素
+void TopK(HPDataType* arr, int size, CMP cmp, int K)
+{
+	Heap hp1;
+	CreateHeap(&hp1, arr, K, Less);
+	for (int i = 3; i < size - 1; i++)
+	{
+		if (arr[i]>hp1._array[0])
+		{
+			Swap(&arr[i], &(hp1._array[0]));
+			AdjustDown(&hp1, K, Less);
+		}
+	}
+	PrintTok(&hp1, K);
+
+	DestroyHeap(&hp1);
+	return;
+
+}
 void TestHeap()
 {
 	Heap hp;
-	HPDataType i = 0;
+	/*HPDataType i = 0;
 	HPDataType array[10] = { 5, 4, 2, 7, 6, 1, 8, 3, 9, 0 };
-	CreateHeap(&hp, array, 10,Less);
-	InserHeap(&hp, 2,Less);
-	DeleteHeapFront(&hp,Less);
-	i = TopHeap(&hp);
-	int a = SizeHeap(&hp);
-	int b = EmptyHeap(&hp);
-	DestroyHeap(&hp,Less);
+	CreateHeap(&hp, array, 10,Less);*/
+	HPDataType array1[10] = { 5, 4, 2, 7, 6, 1, 8, 3, 9, 0 };
+//	HeapPrint(&hp);
+	TopK(array1, 10, Less, 3);
+	
+//	//HeapSort(&hp, 10, Less);//小堆排降，大堆排升序；
+//	//HeapPrint(&hp);
+//	//InserHeap(&hp, 2,Less);
+//	//DeleteHeapFront(&hp,Less);
+//	//i = TopHeap(&hp);
+//	//int a = SizeHeap(&hp);
+//	//int b = EmptyHeap(&hp);
+	//DestroyHeap(&hp);
 }
